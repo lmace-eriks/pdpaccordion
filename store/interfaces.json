@@ -1,0 +1,6 @@
+{
+  "pdpaccordion": {
+    "component": "PDPAccordion",
+    "composition": "children"
+  }
+}
