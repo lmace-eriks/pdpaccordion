@@ -1,2 +1,42 @@
 .container {
 }
+
+.dataSection {
+  border-top: 1px solid rgba(0, 0, 0, 0.15);
+}
+
+.titleButton {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  width: 100%;
+  padding: 0.5rem;
+  background: transparent;
+  border: none;
+  cursor: pointer;
+  text-align: left;
+  font-family: inherit;
+}
+
+.buttonText {
+  margin: 0;
+  font-size: 1.75rem;
+}
+
+/* [data-active="true"] .window {
+  height: auto;
+}
+
+[data-active="false"] .window {
+  height: 0;
+} */
+
+.window {
+  overflow-y: hidden;
+  transition: height 450ms ease;
+  will-change: height;
+}
+
+.wrapper {
+  padding: 0.5rem;
+}

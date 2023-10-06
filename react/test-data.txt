@@ -1,0 +1,77 @@
+// Testing
+    tempValidSpecs.bestUse = {
+      label: "Best Use",
+      value: "Powder",
+      info: {},
+      attribute: "ProductData_AllStyle_SB"
+    }
+    tempValidSpecs.baseTech = {
+      label: "Base Tech",
+      value: "Sintered",
+      info: {
+        text: "Beginners just started while Expert is just about to end."
+      },
+      attribute: "ProductData_WinBaseTech_SB"
+    }
+    tempValidSpecs.baseType = {
+      label: "Base Type",
+      value: "Die Cut",
+      info: {
+        text: "Beginners just started while Expert is just about to end."
+      },
+      attribute: "ProductData_WinBaseType_SB"
+    }
+    tempValidSpecs.core = {
+      label: "Core",
+      value: "Open Text Field",
+      info: {
+        text: "Beginners just started while Expert is just about to end."
+      },
+      attribute: "ProductData_WinCore_SB"
+    }
+    tempValidSpecs.flex = {
+      label: "Flex",
+      value: "4",
+      info: {},
+      attribute: "ProductData_WinFlex_SB"
+    }
+    tempValidSpecs.mounting = {
+      label: "Mounting",
+      value: "3 Hole",
+      info: {},
+      attribute: "ProductData_WinMounting_SB"
+    }
+    tempValidSpecs.profile = {
+      label: "Profile",
+      value: "Rocker",
+      info: {},
+      attribute: "ProductData_WinProfile_SB"
+    }
+    tempValidSpecs.riderLevel = {
+      label: "Rider Level",
+      value: "Intermediate-Advanced",
+      info: {
+        text: "Beginners just started while Expert is just about to end."
+      },
+      attribute: "ProductData_WinRiderLvl_SB"
+    }
+    tempValidSpecs.stance = {
+      label: "Stance",
+      value: "Setback 10-15mm",
+      info: {},
+      attribute: "ProductData_WinStance_SB"
+    }
+    tempValidSpecs.shape = {
+      label: "Shape",
+      value: "Directional",
+      info: {},
+      attribute: "ProductData_WinShape_SB"
+    }
+    tempValidSpecs.gender = {
+      label: "Gender",
+      value: "Womens",
+      info: {
+        text: "Gender is a social construct. Don't worry about it too much."
+      },
+      attribute: "ProductData_Gender_SB"
+    }
