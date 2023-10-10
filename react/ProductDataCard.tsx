@@ -6,18 +6,20 @@ import styles from "./styles.css";
 
 // Types
 import { ProductDataCardProps, DataPoints, PointObject, MoreInfoObject } from "./typesdata";
-
-const removeSpaces = (value: string) => value.split(" ").join("-").toLowerCase();
+import { removeSpaces } from "./PDPAccordion";
 const addSpaces = (value: string) => value.split("-").join(" - ");
 const flexRating = (value: string) => {
   const rating = Number(value);
-  if (rating < 3) return "Soft";
-  if (rating >= 4 && rating <= 7) return "Medium";
-  if (rating >= 8) return "Firm";
-  return ""; // All paths must return a value. - LM
+  if (rating < 3) {
+    return "Soft";
+  } else if (rating >= 4 && rating <= 7) {
+    return "Medium";
+  } else { // 8 or greater.
+    return "Firm";
+  }
 }
 
-const ProductDataCard: StorefrontFunctionComponent<ProductDataCardProps> = ({ validSpecs }) => {
+const ProductDataCard = ({ validSpecs }: ProductDataCardProps) => {
   const modal = useRef<HTMLDialogElement>(null);
   const [moreInfo, setMoreInfo] = useState<MoreInfoObject>({});
 
@@ -44,7 +46,7 @@ const ProductDataCard: StorefrontFunctionComponent<ProductDataCardProps> = ({ va
           <div className={styles.valueText}>
             {validSpecs[spec]?.value}
           </div>
-          <img src={`/arquivos/pdc-sb-${removeSpaces(validSpecs[spec]?.value)}.png`} className={styles.valueImage} />
+          <img src={`/arquivos/pdc-sb-${removeSpaces(validSpecs[spec]?.value)}.png`} className={styles.valueImage} height={80} />
         </div>
       }
       {label === "Flex" &&
@@ -85,7 +87,7 @@ const ProductDataCard: StorefrontFunctionComponent<ProductDataCardProps> = ({ va
   )
 
   return (
-    <div className={styles.container}>
+    <div className={styles.pdcContainer}>
       {Object.keys(validSpecs).map((spec: string, index: number) => (
         <div key={`${spec}-${index}`} className={styles.detailsRow}>
           <div className={styles.spec}>{validSpecs[spec as keyof DataPoints]?.label}:</div>
@@ -113,3 +115,4 @@ ProductDataCard.schema = {
 };
 
 export default ProductDataCard;
+

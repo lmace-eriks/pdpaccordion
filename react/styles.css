@@ -23,20 +23,133 @@
   font-size: 1.75rem;
 }
 
-/* [data-active="true"] .window {
+[data-applicable="false"] {
+  display: none;
+}
+
+[data-active="true"] .window {
   height: auto;
 }
 
 [data-active="false"] .window {
   height: 0;
-} */
+}
 
 .window {
   overflow-y: hidden;
-  transition: height 450ms ease;
-  will-change: height;
+  /* transition: height 450ms ease;
+  will-change: height; */
 }
 
 .wrapper {
   padding: 0.5rem;
+}
+
+/* Product Data Card Start */
+.pdcContainer {
+}
+
+.detailsRow {
+  display: grid;
+  grid-template-columns: 10rem 1fr 7rem;
+  padding: 0.5rem;
+  border-bottom: 1px solid rgba(0, 0, 0, 0.25);
+}
+
+.detailsRow:last-of-type {
+  border-bottom: none;
+}
+
+.spec {
+  display: flex;
+  align-items: flex-start;
+  font-weight: bold;
+}
+
+.value {
+}
+
+.valueStack {
+}
+
+.valueText {
+}
+
+.valueImage {
+}
+
+.learnMore {
+  display: flex;
+  justify-content: center;
+  height: 24px;
+  margin: auto 0 0 auto;
+  width: fit-content;
+  color: #757575;
+  font-size: 0.85rem;
+  text-align: center;
+  background: transparent;
+  padding: 0.15rem;
+  border: none;
+  text-decoration: underline;
+  cursor: pointer;
+  white-space: nowrap;
+  gap: 0.5rem;
+}
+
+.questionMark {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  line-height: 0;
+  color: white;
+  border-radius: 50%;
+  background-color: #757575;
+  text-decoration: none;
+  width: 18px;
+  height: 18px;
+}
+
+.dialog {
+  padding: 1rem;
+  width: fit-content;
+  background-color: white;
+  border: 1px solid black;
+  border-radius: 0.25rem;
+  z-index: 11;
+  max-width: 50rem;
+}
+
+.dialog::backdrop {
+  background: rgba(0, 0, 0, 0.75);
+}
+
+.dialogTitle {
+  text-align: center;
+  font-weight: bold;
+  font-size: 1.5rem;
+}
+
+.dialogText {
+  padding: 0 0.25rem;
+  text-align: center;
+}
+
+.dialogImage {
+  padding: 0.5rem;
+}
+
+.dialogButton {
+  font-family: inherit;
+  display: block;
+  width: fit-content;
+  margin: 0 auto;
+  font-weight: bold;
+  border: none;
+  background-color: #ec1d24;
+  border-radius: 0.25rem;
+  color: white;
+  text-decoration: none;
+  padding: 0.5rem 1.5rem;
+  cursor: pointer;
+  margin-top: 1rem;
 }

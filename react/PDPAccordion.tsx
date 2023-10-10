@@ -1,4 +1,4 @@
-import React, { useEffect, useRef, useState, ReactChildren } from "react";
+import React, { useEffect, useRef, useState, ReactChildren, ReactChild } from "react";
 import { canUseDOM } from "vtex.render-runtime";
 
 // Styles
@@ -6,7 +6,14 @@ import styles from "./styles.css";
 
 interface PDPAccordionProps {
   children: ReactChildren | any
+  sectionTitles: Array<string>
+  sectionProps: Array<SectionPropsObject>
   blockClass: string
+}
+
+interface SectionPropsObject {
+  title: string
+  lazyLoaded: boolean
 }
 
 // Types
@@ -22,22 +29,18 @@ import ProductDataCard from "./ProductDataCard";
 const categoryClass = "vtex-breadcrumb-1-x-arrow--2";
 
 const grabDOM: any = (selector: string) => canUseDOM ? document.querySelector(selector) : null;
+export const removeSpaces = (value: string) => value.split(" ").join("-").toLowerCase().replace("'", "");
 
-const PDPAccordion: StorefrontFunctionComponent<PDPAccordionProps> = ({ children }) => {
+const PDPAccordion: StorefrontFunctionComponent<PDPAccordionProps> = ({ children, sectionProps }) => {
   // Refs
   const wrappers = useRef<Array<HTMLDivElement>>([]);
 
   // State
   const [validSpecs, setValidSpecs] = useState<DataPoints>({});
   const [showDataCard, setShowProductDataCard] = useState(false);
-  const [activeSection, setActiveSection] = useState(0);
+  const [activeSection, setActiveSection] = useState(-1);
   const [activeHeight, setActiveHeight] = useState(0);
-
-  // Children Components
-  const ProductDescription = () => children[0];
-  const EriksExtras = () => children[1];
-  const Reviews = () => children[2];
-  const RelatedProducts = () => children[3];
+  const [loadedSections, setLoadedSections] = useState<Array<boolean>>(sectionProps.map(section => !section.lazyLoaded));
 
   // Run on load
   useEffect(() => determineCategory(), []);
@@ -49,6 +52,7 @@ const PDPAccordion: StorefrontFunctionComponent<PDPAccordionProps> = ({ children
     return () => window.removeEventListener("message", handleMessage);
   });
 
+  // Run on navigate
   const handleMessage = (e: MessageEvent) => {
     const eventName = e.data.eventName;
     if (eventName === "vtex:productView") determineCategory();
@@ -59,14 +63,18 @@ const PDPAccordion: StorefrontFunctionComponent<PDPAccordionProps> = ({ children
     if (!productCategoryDOM) return;
 
     const productCategory = productCategoryDOM.innerText.toLowerCase();
+    let validCategory = false;
 
     for (const key in categories) {
       // Only searchForSpecs() if productCategory is in {categories}.
       if (productCategory === key) {
         searchForSpecs(categories[productCategory]);
+        validCategory = true;
         break;
       }
     }
+
+    if (!validCategory) activateSection(1); // Product Description.
   }
 
   const searchForSpecs = (dataList: DataPoints) => {
@@ -101,13 +109,22 @@ const PDPAccordion: StorefrontFunctionComponent<PDPAccordionProps> = ({ children
       tempValidSpecs[tempKey] = tempObject;
     }
 
+    // Testing
+    tempValidSpecs.bestUse = {
+      label: "Best Use",
+      value: "Powder",
+      info: {},
+      attribute: "ProductData_AllStyle_SB"
+    }
+
     // Only setValidSpecs() if we have found product attributes.
     if (Object.keys(tempValidSpecs).length) {
       setValidSpecs(tempValidSpecs);
       setShowProductDataCard(true);
+      // Product Data Card.
       activateSection(0);
     } else {
-      // Product Details
+      // Product Details.
       activateSection(1);
     }
   }
@@ -120,12 +137,17 @@ const PDPAccordion: StorefrontFunctionComponent<PDPAccordionProps> = ({ children
     }
   }
 
-  const handleTitleClick = (event: React.MouseEvent<HTMLButtonElement, MouseEvent>) => {
-    const target = event.currentTarget as HTMLButtonElement;
-    const section = target.parentElement!;
-    const sectionNumber = Number(section.dataset.pdpSection);
+  const sectionClick = (index: number) => {
+    const sectionShouldLazyLoad = sectionProps[index].lazyLoaded;
+    sectionShouldLazyLoad ? loadSection(index) : activateSection(index);
+  }
 
-    activateSection(sectionNumber);
+  const loadSection = (index: number) => {
+    console.info(loadedSections);
+    const tempLoadedSections = loadedSections;
+    tempLoadedSections[index] = true;
+    setLoadedSections(tempLoadedSections);
+    activateSection(index);
   }
 
   const setRef = (element: HTMLDivElement, wrapper: number) => wrappers.current[wrapper] = element;
@@ -133,66 +155,21 @@ const PDPAccordion: StorefrontFunctionComponent<PDPAccordionProps> = ({ children
   return (
     <section aria-label="Product Information" className={styles.container}>
 
-      {showDataCard &&
-        <section aria-labelledby="product-data-card-title" data-pdp-section={0} data-active={activeSection === 0} className={styles.dataSection}>
-          <button onClick={handleTitleClick} className={styles.titleButton}>
-            <h2 id="product-data-card-title" className={styles.buttonText}>Details</h2>
+      {sectionProps.map((section: SectionPropsObject, index: number) => (
+        <section key={section.title} aria-labelledby={`${removeSpaces(section.title)}-title`} data-pdp-section={index} data-active={activeSection === index} data-applicable={index === 0 ? showDataCard ? "true" : "false" : "true"} className={styles.dataSection}>
+          <button onClick={() => sectionClick(index)} className={styles.titleButton}>
+            <h2 id={`${removeSpaces(section.title)}-title`} className={styles.buttonText}>{section.title}</h2>
             <span>+</span>
           </button>
-          <div style={{ height: `${activeSection === 0 ? activeHeight : 0}px` }} className={styles.window}>
-            <div ref={(element: HTMLDivElement) => setRef(element, 0)} className={styles.wrapper}>
-              <ProductDataCard validSpecs={validSpecs} />
+          {/* <div style={{ height: `${activeSection === index ? activeHeight : 0}px` }} className={styles.window}> */}
+          <div className={styles.window}>
+            <div ref={(element: HTMLDivElement) => setRef(element, index)} className={styles.wrapper}>
+              {index === 0 ? <ProductDataCard validSpecs={validSpecs} /> :
+                !loadedSections[index] ? <div>Loading Data...</div> : children[index - 1]}
             </div>
           </div>
-        </section>}
-
-      <section aria-labelledby="description-title" data-pdp-section={1} data-active={activeSection === 1} className={styles.dataSection}>
-        <button onClick={handleTitleClick} className={styles.titleButton}>
-          <h2 id="description-title" className={styles.buttonText}>Product Description</h2>
-          <span>+</span>
-        </button>
-        <div style={{ height: `${activeSection === 1 ? activeHeight : 0}px` }} className={styles.window}>
-          <div ref={(element: HTMLDivElement) => setRef(element, 1)} className={styles.wrapper}>
-            <ProductDescription />
-          </div>
-        </div>
-      </section>
-
-      <section aria-labelledby="eriks-extras-title" data-pdp-section={2} data-active={activeSection === 2} className={styles.dataSection}>
-        <button onClick={handleTitleClick} className={styles.titleButton}>
-          <h2 id="eriks-extras-title" className={styles.buttonText}>Erik's Extras</h2>
-          <span>+</span>
-        </button>
-        <div style={{ height: `${activeSection === 2 ? activeHeight : 0}px` }} className={styles.window}>
-          <div ref={(element: HTMLDivElement) => setRef(element, 2)} className={styles.wrapper}>
-            <EriksExtras />
-          </div>
-        </div>
-      </section>
-
-      <section aria-labelledby="review-title" data-pdp-section={3} data-active={activeSection === 3} className={styles.dataSection}>
-        <button onClick={handleTitleClick} className={styles.titleButton}>
-          <h2 id="review-title" className={styles.buttonText}>Reviews and Questions</h2>
-          <span>+</span>
-        </button>
-        <div style={{ height: `${activeSection === 3 ? activeHeight : 0}px` }} className={styles.window}>
-          <div ref={(element: HTMLDivElement) => setRef(element, 3)} className={styles.wrapper}>
-            <Reviews />
-          </div>
-        </div>
-      </section>
-
-      <section aria-labelledby="similar-items-title" data-pdp-section={4} data-active={activeSection === 4} className={styles.dataSection}>
-        <button onClick={handleTitleClick} className={styles.titleButton}>
-          <h2 id="similar-items-title" className={styles.buttonText}>Similar Items</h2>
-          <span>+</span>
-        </button>
-        <div style={{ height: `${activeSection === 4 ? activeHeight : 0}px` }} className={styles.window}>
-          <div ref={(element: HTMLDivElement) => setRef(element, 4)} className={styles.wrapper}>
-            <RelatedProducts />
-          </div>
-        </div>
-      </section>
+        </section>
+      ))}
 
     </section>
   );
